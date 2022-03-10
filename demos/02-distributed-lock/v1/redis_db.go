@@ -36,6 +36,7 @@ func addLuckyGuys(c context.Context, uid string) int64 {
 	return rdb.SAdd(c, key, uid).Val()
 }
 
+// isLuckyGuy 判断是否为中奖用户
 func isLuckyGuy(c context.Context, uid string) bool {
 	return rdb.SIsMember(c, luckyGuysKey(), uid).Val()
 }
@@ -43,4 +44,10 @@ func isLuckyGuy(c context.Context, uid string) bool {
 // luckyGuysKey 返回幸运用户的集合
 func luckyGuysKey() string {
 	return "promote:iphone:luckyguys"
+}
+
+// decrIPHoneStock 减少库存
+func decrIPhoneStock(c context.Context) {
+	key := iphoneStockKey()
+	_ = rdb.Decr(c, key).Val()
 }

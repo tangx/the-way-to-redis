@@ -15,5 +15,6 @@ func init() {
 		Addr:     "localhost:6379",
 		Password: "redis123",
 		DB:       1,
+		PoolSize: 500,
 	})
 }

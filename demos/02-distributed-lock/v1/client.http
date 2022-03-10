@@ -1,0 +1,9 @@
+
+### POST 用户中奖
+POST http://127.0.0.1:8081/promote/iphone/20
+
+### GET 用户中奖
+GET http://127.0.0.1:8081/promote/iphone
+
+
+
