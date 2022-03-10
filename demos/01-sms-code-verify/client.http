@@ -1,0 +1,6 @@
+### GET gen sms code
+GET http://127.0.0.1:8080/sms/get/13912341234
+
+
+### POST verify sms code
+POST http://127.0.0.1:8080/sms/verify/13912341234?code=613080
