@@ -49,6 +49,34 @@ RPUSH key element [element ...]
 7) "r3"
 ```
 
+
+### 当数组存在时再添加: `LPushX` and `RPushX`
+
+只有到目标数组 **存在时** ， `LPushX` 和 `RPushX` 才会将元素加入到数组中。
+
+```bash
+LPUSHX key element [element ...]
+RPUSHX key element [element ...]
+```
+
+分别 **从左或从右** 向数组中添加 **至少一个** 元素。
+
+```bash
+127.0.0.1:6379> lpush list_x "world"
+(integer) 1
+127.0.0.1:6379> LPUSHX list_x "hello"
+(integer) 2
+127.0.0.1:6379> LRANGE list_x 0 -1
+1) "hello"
+2) "world"
+127.0.0.1:6379>
+127.0.0.1:6379> LPUSHX lsit_no "hello"
+(integer) 0
+127.0.0.1:6379> LRANGE list_no 0 -1
+(empty array)
+127.0.0.1:6379>
+```
+
 ### 遍历元素: `LRANGE`
 
 遍历数据只有命令 `LRange`， 即只能从左侧开始，不能从右侧开始。
@@ -233,6 +261,37 @@ OK
 4) "__FOO__"
 ```
 
+
+### 元素转移: 右出左进 `RpopLpush`
+
+将一个元素从 **数组A** 的 **右侧** 取出， 并放入 **数组B** 的左侧
+
+```
+RPOPLPUSH source destination
+```
+
+1. `source` 源数组
+2. `destination` 目标数组
+
+
+```bash
+127.0.0.1:6379> rpush list_A 1 2 3 4
+(integer) 4
+127.0.0.1:6379> rpush list_B a b c d
+(integer) 4
+127.0.0.1:6379> RPOPLPUSH list_A list_B
+"4"
+127.0.0.1:6379> LRANGE list_A 0 -1
+1) "1"
+2) "2"
+3) "3"
+127.0.0.1:6379> lrange list_B 0 -1
+1) "4"
+2) "a"
+3) "b"
+4) "c"
+5) "d"
+```
 
 ## 其他命令
 
