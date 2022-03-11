@@ -298,3 +298,15 @@ RPOPLPUSH source destination
 更多 list 相关命令
 
 > https://redis.io/commands/#list
+
+
+## 数据结构
+
+1. List 的数据结构为 **快速链表 `quickList`** 。
+2. 首先在列表 **元素较少的情况下会使用一块连续的内存存储** ，这个结构是 ziplist，也即是 **压缩列** 。它将所有的元素紧挨着一起存储，分配的是一块连续的内存。
+
+3. **当数据量比较多的时候才会改成 quicklist** 。 因为普通的链表需要的附加指针空间太大，会比较浪费空间。比如这个列表里存的只是 int 类型的数据，结构上还需要两个额外的指针prev和next。
+ 
+4. Redis 将链表和 ziplist 结合起来组成了 quicklist 。也就是将多个 ziplist 使用双向指针串起来使用。 这样既满足了快速的插入删除性能， 又不会出现太大的空间冗余。
+
+![20220311145251](https://assets.tangx.in/blog/redis-type-list/20220311145251.png)
