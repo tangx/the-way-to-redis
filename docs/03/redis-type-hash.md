@@ -142,3 +142,66 @@ HINCRBY key field increment
 (integer) 15
 ```
 
+### 统计字段长度: `HStrLen`
+
+使用 `HStrLen` 可以统计指定字段值的长度。
+
+```
+HSTRLEN key field
+```
+
+```bash
+127.0.0.1:6379> HSET myhash f1 v1 f2 v2 f3 v3
+(integer) 3
+127.0.0.1:6379> HSTRLEN myhash f1
+(integer) 2
+```
+
+
+### 获取随机字段: `HRandFiled`
+
+使用 `HRandFiled` 可以随机返回 **一个或多个** **字段名称**， 及 **其值** （如指定）。
+
+```
+HRANDFIELD key [count [WITHVALUES]]
+```
+
+1. `count` 返回 N 个字段。 默认值为 **1**
+2. `count WithValues` 返回字段名称及其值。
+
+```bash
+127.0.0.1:6379> HRANDFIELD myhash
+"f3"
+
+127.0.0.1:6379> HRANDFIELD myhash 1
+1) "f3"
+
+127.0.0.1:6379> HRANDFIELD myhash 1 withvalues
+1) "f1"
+2) "v1"
+
+## WithValues 必须与 count 联用。
+127.0.0.1:6379> HRANDFIELD myhash withvalues
+(error) ERR value is not an integer or out of range
+```
+
+### 只设置 `不存在的字段` 值: `HSetNX`
+
+`HSetNX` 只对 **不存在的字段** 生效。 如果字段已存在， 则略过。
+
+```
+HSETNX key field value
+```
+
+```bash
+127.0.0.1:6379> HKEYS myhash
+1) "f1"
+2) "f2"
+3) "f3"
+
+127.0.0.1:6379> HSETNX myhash f1 VVV1
+(integer) 0
+
+127.0.0.1:6379> HSETNX myhash f99 vvv99
+(integer) 1
+```
