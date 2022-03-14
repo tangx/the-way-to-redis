@@ -9,11 +9,13 @@ local luckyGuysKey = tostring(KEYS[2])
 
 
 -- 2. 检查 uid 是否已经中奖用户
--- local vals = redis.call("SIsMemeber", luckyGuysKey)
-local val = redis.call("SISMEMBER", luckyGuysKey, uid)
--- local exists = tobool(vals)
+local exists = redis.call("SISMEMBER", luckyGuysKey, uid)
 --- demo: https://segmentfault.com/a/1190000018070172
-if exists then 
+---  这里需要转换成数字进行判断， 貌似 redis-lua 没有 toboolean() 这种方法
+-- if not exists then
+--     return -2
+-- end
+if tonumber(exists) == 1  then 
     -- 2.1 已经中奖
     return -2
 end

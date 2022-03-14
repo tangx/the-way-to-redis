@@ -20,7 +20,7 @@ func luckyGuysKey() string {
 
 func luckyGuysPipeWithLua(c *gin.Context) error {
 
-	rdb.SAdd(c, luckyGuysKey(), "123123")
+	// rdb.SAdd(c, luckyGuysKey(), "123123")
 
 	b, _ := os.ReadFile("promote.lua")
 	lua := redis.NewScript(string(b))

@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 )
 
@@ -22,7 +24,7 @@ func handlerPromoteSET(c *gin.Context) {
 func handlerPromote(c *gin.Context) {
 
 	err := luckyGuysPipeWithLua(c)
-	if err != nil {
+	if err != nil && !errors.Is(err, redis.Nil) {
 		c.JSON(http.StatusForbidden, map[string]interface{}{
 			"msg": "forbiden",
 			"err": err.Error(),

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 )
@@ -17,4 +19,9 @@ func init() {
 		DB:       1,
 		PoolSize: 500,
 	})
+
+	err := rdb.Ping(context.Background()).Err()
+	if err != nil {
+		panic(err)
+	}
 }
