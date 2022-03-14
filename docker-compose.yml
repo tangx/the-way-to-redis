@@ -2,6 +2,7 @@ version: '2'
 
 services:
   redis:
+    restart: always
     image: docker.io/bitnami/redis:6.2
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
