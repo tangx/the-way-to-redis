@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -46,28 +47,41 @@ func accountKey() string {
 
 func worker(ctx context.Context) error {
 
-	time.Sleep(time.Microsecond * time.Duration(rand.Intn(100)))
+	time.Sleep(time.Millisecond * time.Duration(rand.Intn(100)))
 
-	// 1. 获取当前 locker 版本
-	ver := rdb.Get(ctx, lockerKey()).Val()
-
-	// 2. 获取账户余额
-	_, err := rdb.Get(ctx, accountKey()).Int()
+	/* 数据获取
+	1. 获取当前 locker 版本
+	2. 获取账户余额
+	// ver := rdb.Get(ctx, lockerKey()).Val()
+	// _, err := rdb.Get(ctx, accountKey()).Int()
+	// if err != nil {
+	// 	return err
+	// }
+	*/
+	vals := rdb.MGet(ctx, lockerKey(), accountKey()).Val()
+	ver := vals[0]
+	account, err := atoi(vals[1])
 	if err != nil {
 		return err
 	}
+	newAccount := account + 100
+	fmt.Println("newAccount:=>", newAccount)
+
+	time.Sleep(time.Millisecond * time.Duration(rand.Intn(200)))
 
 	// 4. 事务执行
 	fn := func(tx *redis.Tx) error {
-		pipe := tx.Pipeline()
+
 		// 4.1 获取 locker 版本， locker 版本于本地版本一致判断
 		ver2 := tx.Get(ctx, lockerKey()).Val()
 		if ver2 != ver {
 			return errors.New("version 变更， 退出")
 		}
 
+		pipe := tx.Pipeline()
 		// 4.3 将账户余额存进 redis
-		pipe.IncrBy(ctx, accountKey(), 100)
+		// pipe.IncrBy(ctx, accountKey(), 100)
+		pipe.Set(ctx, accountKey(), newAccount, 0)
 		pipe.Incr(ctx, lockerKey())
 		_, err := pipe.Exec(ctx)
 		return err
@@ -78,7 +92,20 @@ func worker(ctx context.Context) error {
 		ctx,
 		fn,
 		lockerKey(),
+		accountKey(),
 	)
 
 	return err
+}
+
+// atoi 将 redis 结果转化为 int 类型
+func atoi(v interface{}) (int, error) {
+	switch vv := v.(type) {
+	case string:
+		return strconv.Atoi(vv)
+	case int, int8, int16, int32, int64:
+		return vv.(int), nil
+	default:
+		return 0, errors.New("uknown type")
+	}
 }
