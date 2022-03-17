@@ -11,9 +11,16 @@ services:
       - REDIS_PASSWORD=redis123
     ports:
       - '6379:6379'
-    # volumes:
-    #   - 'redis_data:/bitnami/redis/data'
 
-volumes:
-  redis_data:
-    driver: local
+  # db:
+  #   network_mode: default
+  #   image: mysql:5.7
+  #   # command: --default-authentication-plugin=mysql_native_password
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: Mysql123
+  #   volumes: 
+  #     - ./data:/var/lib/mysql
+  #   ports:
+  #     - 3306:3306
+
